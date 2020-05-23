@@ -9,14 +9,15 @@ from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateEntity
 from homeassistant.components.climate.const import (
     HVAC_MODE_COOL, HVAC_MODE_HEAT, HVAC_MODE_HEAT_COOL,
     HVAC_MODE_DRY, HVAC_MODE_FAN_ONLY, HVAC_MODE_OFF,
-    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE,
+    SUPPORT_TARGET_TEMPERATURE, SUPPORT_FAN_MODE, 
     SUPPORT_SWING_MODE, SUPPORT_PRESET_MODE,
     ATTR_CURRENT_TEMPERATURE, ATTR_FAN_MODE,
-    PRESET_ECO, PRESET_NONE, PRESET_BOOST,
+    PRESET_ECO, PRESET_NONE, PRESET_BOOST, 
     ATTR_HVAC_MODE, ATTR_SWING_MODE, ATTR_PRESET_MODE)
 
 from homeassistant.const import (
-    TEMP_CELSIUS, ATTR_TEMPERATURE, CONF_USERNAME, CONF_PASSWORD)
+## ADDED" PRECISION_HALVES," below####
+    TEMP_CELSIUS, ATTR_TEMPERATURE, CONF_USERNAME, PRECISION_HALVES, CONF_PASSWORD)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -88,14 +89,14 @@ class PanasonicDevice(ClimateEntity):
         self._api = api
         self._device = device
         self._constants = constants
-        self._current_temp = None
+#        self._current_temp = None
         self._is_on = False
         self._hvac_mode = OPERATION_LIST[HVAC_MODE_COOL]
 
         self._unit = TEMP_CELSIUS
         self._target_temp = None
         self._cur_temp = None
-        self._outside_temp = None
+        self._out_temp = None
         self._mode = None
         self._eco = 'Auto'
 
@@ -127,9 +128,9 @@ class PanasonicDevice(ClimateEntity):
             self._cur_temp = None
 
         if data['parameters']['temperatureOutside'] != 126:
-            self._outside_temp = data['parameters']['temperatureOutside']
+            self._out_temp = data['parameters']['temperatureOutside']
         else:
-            self._outside_temp = None
+            self._out_temp = None
 
         self._is_on =bool( data['parameters']['power'].value )
         self._hvac_mode = data['parameters']['mode'].name
@@ -142,7 +143,12 @@ class PanasonicDevice(ClimateEntity):
     def supported_features(self):
         """Return the list of supported features."""
         return SUPPORT_FLAGS
-
+### ADDED FROM ###
+    @property
+    def precision(self):
+        """Return the precision of the system."""
+        return PRECISION_HALVES
+### ADDED TO ###
     @property
     def name(self):
         """Return the display name of this climate."""
@@ -204,9 +210,9 @@ class PanasonicDevice(ClimateEntity):
         return self._cur_temp
 
     @property
-    def outside_temperature(self):
-        """Return the current temperature."""
-        return self._outside_temp
+    def current_humidity(self):
+        """Return the outside temperature."""
+        return self._out_temp
 
     @property
     def preset_mode(self) -> Optional[str]:
@@ -300,7 +306,7 @@ class PanasonicDevice(ClimateEntity):
     @property
     def min_temp(self):
         """Return the minimum temperature."""
-        return 16
+        return 8
 
     @property
     def max_temp(self):
@@ -308,6 +314,6 @@ class PanasonicDevice(ClimateEntity):
         return 30
 
     @property
-    def target_temp_step(self):
+    def target_temperature_step(self):
         """Return the temperature step."""
         return 0.5
