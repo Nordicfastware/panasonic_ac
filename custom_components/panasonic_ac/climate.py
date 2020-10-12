@@ -16,7 +16,6 @@ from homeassistant.components.climate.const import (
     ATTR_HVAC_MODE, ATTR_SWING_MODE, ATTR_PRESET_MODE)
 
 from homeassistant.const import (
-## ADDED" PRECISION_HALVES," below####
     TEMP_CELSIUS, ATTR_TEMPERATURE, CONF_USERNAME, PRECISION_HALVES, CONF_PASSWORD)
 
 _LOGGER = logging.getLogger(__name__)
